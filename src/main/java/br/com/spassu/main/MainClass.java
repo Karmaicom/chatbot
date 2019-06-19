@@ -9,7 +9,7 @@ import br.com.spassu.bot.RockBot;
 public class MainClass {
 
 	public static void main(String[] args) {
-		System.out.println("Iniciando...");
+		System.out.println("Chatbot iniciado...");
 		
 		ApiContextInitializer.init();
 		
