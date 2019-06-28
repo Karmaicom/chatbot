@@ -62,7 +62,7 @@ public class RockBot extends TelegramLongPollingBot {
 			List<String> welcomeList = Arrays.asList("Olá, sou o ChatBot do Rock!",
 					"Olá, tudo bem? Bem vindo ao mundo de notícias do Rock!");
 			Random random = new Random();
-			//enviarRespostaTelegram(welcomeList.get(random.nextInt(welcomeList.size())), message, update, null, null);
+			enviarRespostaTelegram(welcomeList.get(random.nextInt(welcomeList.size())), message, update, null, null);
 			mensagemRespondida = true;
 		}
 
@@ -73,7 +73,7 @@ public class RockBot extends TelegramLongPollingBot {
 			List<String> agradecerList = Arrays.asList("De nada!", "Disponha.", "Até a próxima.", "Até mais.",
 					"Volte sempre que precisar.", "Foi um prazer ajudar.");
 			Random random = new Random();
-			//enviarRespostaTelegram(agradecerList.get(random.nextInt(agradecerList.size())), message, update, null, null);
+			enviarRespostaTelegram(agradecerList.get(random.nextInt(agradecerList.size())), message, update, null, null);
 			mensagemRespondida = true;
 		}
 
@@ -83,7 +83,7 @@ public class RockBot extends TelegramLongPollingBot {
 			List<String> byeList = Arrays.asList("Nos vemos em breve!", "Obrigado pela conversa!",
 					"Foi bom conversar com você!");
 			Random random = new Random();
-			//enviarRespostaTelegram(byeList.get(random.nextInt(byeList.size())), message, update, null, null);
+			enviarRespostaTelegram(byeList.get(random.nextInt(byeList.size())), message, update, null, null);
 			mensagemRespondida = true;
 		}
 
@@ -96,14 +96,13 @@ public class RockBot extends TelegramLongPollingBot {
 			Random random = new Random();
 			enviarRespostaTelegram(segurancaList.get(random.nextInt(segurancaList.size())), message, update, null,
 					null);
-			//enviarRespostaAutomaticaFoiUtil(message, update);
+			enviarRespostaAutomaticaFoiUtil(message, update);
 			mensagemRespondida = true;
 		}
 
 		if (mensagemRespondida == false) {
 			enviarRespostaAutomatica(message, update);
-			// enviarRespostaTelegram("Ainda não conheço sobre esse assunto. Favor pesquisar
-			// em " + "http:\\\\www.google.com.br", message, update);
+			// enviarRespostaTelegram("Ainda não conheço sobre esse assunto. Favor pesquisar em " + "http:\\\\www.google.com.br", message, update);
 			mensagemRespondida = true;
 		}
 
@@ -168,8 +167,7 @@ public class RockBot extends TelegramLongPollingBot {
 		    
 		    enviarRespostaTelegram(texto.toString(), message, update, null, null);
 			*/
-			
-			
+						
 			Client c = Client.create();
 			WebResource wr = c.resource("https://zfrdmofcdk.execute-api.us-east-1.amazonaws.com/default/HelloFunction");
 			//WebResource wr = c.resource("https://bv29vu8il0.execute-api.sa-east-1.amazonaws.com/DEV/chamador");
@@ -198,7 +196,6 @@ public class RockBot extends TelegramLongPollingBot {
 			}
 			}
 		*/
-
 	}
 
 	public void enviarRespostaTelegram(String texto, SendMessage message, Update update, InlineKeyboardMarkup markupKeyboard, ReplyKeyboardMarkup replyKeyboardMarkup) {
