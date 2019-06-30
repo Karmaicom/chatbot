@@ -1,9 +1,19 @@
 package br.com.spassu.bot;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -13,8 +23,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class RockBot extends TelegramLongPollingBot {
 
@@ -73,7 +84,8 @@ public class RockBot extends TelegramLongPollingBot {
 			List<String> agradecerList = Arrays.asList("De nada!", "Disponha.", "Até a próxima.", "Até mais.",
 					"Volte sempre que precisar.", "Foi um prazer ajudar.");
 			Random random = new Random();
-			enviarRespostaTelegram(agradecerList.get(random.nextInt(agradecerList.size())), message, update, null, null);
+			enviarRespostaTelegram(agradecerList.get(random.nextInt(agradecerList.size())), message, update, null,
+					null);
 			mensagemRespondida = true;
 		}
 
@@ -102,7 +114,8 @@ public class RockBot extends TelegramLongPollingBot {
 
 		if (mensagemRespondida == false) {
 			enviarRespostaAutomatica(message, update);
-			// enviarRespostaTelegram("Ainda não conheço sobre esse assunto. Favor pesquisar em " + "http:\\\\www.google.com.br", message, update);
+			// enviarRespostaTelegram("Ainda não conheço sobre esse assunto. Favor pesquisar
+			// em " + "http:\\\\www.google.com.br", message, update);
 			mensagemRespondida = true;
 		}
 
@@ -127,7 +140,7 @@ public class RockBot extends TelegramLongPollingBot {
 	}
 
 	private synchronized void enviarRespostaAutomatica(SendMessage message, Update update) {
-		
+
 		/*
 		 * // Create a keyboard ReplyKeyboardMarkup replyKeyboardMarkup = new
 		 * ReplyKeyboardMarkup(); message.setReplyMarkup(replyKeyboardMarkup);
@@ -157,48 +170,73 @@ public class RockBot extends TelegramLongPollingBot {
 		 * , message, update, null, replyKeyboardMarkup);
 		 */
 
+		// https://zfrdmofcdk.execute-api.us-east-1.amazonaws.com/default/HelloFunction
+		// https://bv29vu8il0.execute-api.sa-east-1.amazonaws.com/DEV/chamador
+		
+		String jsonInputString =
+				  "{\"responseId\": \"b9de7dd5-d645-44f5-bec7-f84b690a1549-64cfa233\",\r\n" +
+				  " \"queryResult\": {\"action\": \"acionar\"},\r\n" +
+				  " \"originalDetectIntentRequest\": {\"payload\": {\"data\": {\"message\": {\"from\": {\"username\": \"rararipe\", \"id\": 800924953.0\r\n"
+				  +
+				  "                 }, \"chat\": {\"id\": 800924953.0, \"username\": \"rararipe\"\r\n"
+				  + "                 }, \"text\": \"O que é a Mind?\"\r\n" +
+				  "             }\r\n" + "         }\r\n" + "     }\r\n" + " }\r\n" + "}";
 		
 		try {
-			
+			String url = "https://bv29vu8il0.execute-api.sa-east-1.amazonaws.com/DEV/chamador";
+			URL obj = new URL(url);
+			HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+
+			// add reuqest header
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Content-Type", "application/json");
+
+			String urlParameters = jsonInputString;
+
+			// Send post request
+			con.setDoOutput(true);
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(urlParameters);
+			wr.flush();
+			wr.close();
+
 			/*
-			Client c = Client.create();
-		    WebResource wr = c.resource("https://bv29vu8il0.execute-api.sa-east-1.amazonaws.com/DEV/chamador");
-		    String texto = wr.get(String.class);
-		    
-		    enviarRespostaTelegram(texto.toString(), message, update, null, null);
+			int responseCode = con.getResponseCode();
+			System.out.println("\nSending 'POST' request to URL : " + url);
+			System.out.println("Post parameters : " + urlParameters);
+			System.out.println("Response Code : " + responseCode);
 			*/
-						
-			Client c = Client.create();
-			WebResource wr = c.resource("https://zfrdmofcdk.execute-api.us-east-1.amazonaws.com/default/HelloFunction");
-			//WebResource wr = c.resource("https://bv29vu8il0.execute-api.sa-east-1.amazonaws.com/DEV/chamador");
+			
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
 
-			String json = wr.get(String.class);
+			JsonParser jp = new JsonParser();
+		    JsonElement root = jp.parse(new InputStreamReader((InputStream) con.getContent()));
+		    JsonObject jsonobj = root.getAsJsonObject();
+		    JsonElement textoMsgResposta = jsonobj.get("fulfillmentText");
+			
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
 
-			String texto = json;
-		    
-		    enviarRespostaTelegram(texto.toString(), message, update, null, null);
-
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			// print result
+			//System.out.println(response.toString());
+			enviarRespostaTelegram(textoMsgResposta.toString().replace("", null), message, update, null, null);
+			
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (ProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		 
 		
-		/*
-		{"responseId": "b9de7dd5-d645-44f5-bec7-f84b690a1549-64cfa233",
-			"queryResult": {"action": "acionar"},
-			"originalDetectIntentRequest": {"payload": {"data": {"message": {"from": {"username": "rararipe", "id": 800924953.0
-			                }, "chat": {"id": 800924953.0, "username": "rararipe"
-			                }, "text": "O que são placas petrográficas?"
-			            }
-			        }
-			    }
-			}
-			}
-		*/
 	}
 
-	public void enviarRespostaTelegram(String texto, SendMessage message, Update update, InlineKeyboardMarkup markupKeyboard, ReplyKeyboardMarkup replyKeyboardMarkup) {
+	public void enviarRespostaTelegram(String texto, SendMessage message, Update update,
+			InlineKeyboardMarkup markupKeyboard, ReplyKeyboardMarkup replyKeyboardMarkup) {
 		message.setChatId(update.getMessage().getChatId());
 		message.setText(texto);
 
