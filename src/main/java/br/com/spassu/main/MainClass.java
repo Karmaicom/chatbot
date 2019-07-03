@@ -4,7 +4,7 @@ import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import br.com.spassu.bot.RockBot;
+import br.com.spassu.bot.MindBot;
 
 public class MainClass {
 
@@ -16,7 +16,7 @@ public class MainClass {
 		TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
 		
 		try {
-			telegramBotsApi.registerBot(new RockBot());
+			telegramBotsApi.registerBot(new MindBot());
 		} catch (TelegramApiException e) {
 			e.printStackTrace();
 		}

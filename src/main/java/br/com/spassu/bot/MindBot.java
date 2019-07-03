@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -16,7 +17,6 @@ import javax.net.ssl.HttpsURLConnection;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -26,7 +26,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class RockBot extends TelegramLongPollingBot {
+public class MindBot extends TelegramLongPollingBot {
 
 	SendMessage message = new SendMessage();
 	static List<Long> chatIds;
@@ -38,14 +38,14 @@ public class RockBot extends TelegramLongPollingBot {
 
 	@Override
 	public String getBotUsername() {
-		return "rockbot2019_bot";
-		// return "mindbr_bot";
+		//return "rockbot2019_bot";
+		return "mindbr_bot";
 	}
 
 	@Override
 	public String getBotToken() {
-		return "865506190:AAEFhfmOCFCn3su-ZVn2zVRbwmKs4sTCBc4";
-		// return "828048268:AAEt5WU1i_s-wm1tmhSf55OAMalCCw8Yd-w";
+		//return "865506190:AAEFhfmOCFCn3su-ZVn2zVRbwmKs4sTCBc4";
+		return "828048268:AAEt5WU1i_s-wm1tmhSf55OAMalCCw8Yd-w";
 	}
 
 	/**
@@ -112,8 +112,8 @@ public class RockBot extends TelegramLongPollingBot {
 		}
 		
 		// Intent prazo
-		List<String> prazo = Arrays.asList("Quando terei um retorno?", "Essa resposta demora?", "Em quanto tempo terei resposta?", "Quanto tempo vou esperar?",
-				"Isso vai demorar muito?");
+		List<String> prazo = Arrays.asList("quando terei um retorno?", "essa resposta demora?", "em quanto tempo terei resposta?", "quanto tempo vou esperar?",
+				"isso vai demorar muito?");
 		if (prazo.contains(textUsuario) && mensagemRespondida == false) {
 			List<String> prazoList = Arrays.asList("Só um momento, por favor.",
 		            "Só um instante, estou tetando encontrar a melhor resposta.",
@@ -127,7 +127,7 @@ public class RockBot extends TelegramLongPollingBot {
 		}
 
 		// Intent previsão
-		List<String> previsao = Arrays.asList("previsão do tempo", "previsão chuva", "Qual a previsão do tempo?", "Teremos chuva amanhã?",
+		List<String> previsao = Arrays.asList("previsão do tempo", "previsão chuva", "qual a previsão do tempo?", "teremos chuva amanhã?",
 				"Amanhã vai fazer sol?", "Choverá hoje à noite?", "Teremos sol hoje?", "Vai chover hoje?");
 		if (previsao.contains(textUsuario) && mensagemRespondida == false) {
 			List<String> previsaoList = Arrays.asList("Humm... Sobre isso não sei dizer, mas você pode dar uma olhada no Clima Tempo",
@@ -163,8 +163,8 @@ public class RockBot extends TelegramLongPollingBot {
 		}
 		
 		// Intent perguntar
-		List<String> perguntar = Arrays.asList("Pode me ajudar? Quero saber onde está a Petrobras.", "Sabe onde fica a Petrobras?",
-				"Em que rua fica a Petrobras?", "Onde posso encontrar a Petrobras?");
+		List<String> perguntar = Arrays.asList("pode me ajudar? quero saber onde está a petrobras.", "sabe onde fica a petrobras?",
+				"em que rua fica a petrobras?", "onde posso encontrar a Petrobras?");
 		if (perguntar.contains(textUsuario) && mensagemRespondida == false) {
 			List<String> perguntarList = Arrays.asList("Entendi, mas, de qual imóvel Petrobras você gostaria de saber a localidade? É do EDISE?",
 		            "Tudo bem, vou te ajudar com isso. Você está falando do edifício sede da Petrobras?");
@@ -174,7 +174,7 @@ public class RockBot extends TelegramLongPollingBot {
 		}
 		
 		// Intent sorrir
-		List<String> sorrir = Arrays.asList(":grinning:");
+		List<String> sorrir = Arrays.asList(":smile:");
 		if (sorrir.contains(textUsuario) && mensagemRespondida == false) {
 			List<String> sorrirList = Arrays.asList("Que lindo sorriso!");
 			Random random = new Random();
@@ -183,7 +183,7 @@ public class RockBot extends TelegramLongPollingBot {
 		}
 		
 		if (mensagemRespondida == false) {
-			enviarRespostaAutomatica(message, update);
+			enviarRespostaAPI(message, update);
 			// enviarRespostaTelegram("Ainda não conheço sobre esse assunto. Favor pesquisar
 			// em " + "http:\\\\www.google.com.br", message, update);
 			mensagemRespondida = true;
@@ -211,7 +211,8 @@ public class RockBot extends TelegramLongPollingBot {
 	}
 	*/
 	
-	private synchronized void enviarRespostaAutomatica(SendMessage message, Update update) {
+	int contadorTentativas = 0;
+	private synchronized void enviarRespostaAPI(SendMessage message, Update update) {
 
 		/*
 		 * // Create a keyboard ReplyKeyboardMarkup replyKeyboardMarkup = new
@@ -247,9 +248,12 @@ public class RockBot extends TelegramLongPollingBot {
 		
 		//String username = "rararipe";
 
-		System.out.println("chatId: " + update.getMessage().getChatId());
+		String textMsgRespostaFormatada = "";
+		
+		System.out.println("ChatId: " + update.getMessage().getChatId());
 		System.out.println("Username: " + update.getMessage().getChat().getUserName());
-		System.out.println("texto: " + update.getMessage().getText());
+		System.out.println("Texto: " + update.getMessage().getText());
+		System.out.println("Horário: " + LocalDate.now());
 		
 		//{'responseId': 'b9de7dd5-d645-44f5-bec7-f84b690a1549-64cfa233','queryResult': {'action': 'acionar'},'originalDetectIntentRequest': {'payload': {'data': {'message': {'from': {'username': 'karmaicom', 'id':null}, 'chat': {'id': null, 'username': 'karmaicom'}, 'text': 'teste'}}}}}
 		//{'responseId': 'b9de7dd5-d645-44f5-bec7-f84b690a1549-64cfa233','queryResult': {'action': 'acionar'},'originalDetectIntentRequest': {'payload': {'data': {'message': {'from': {'username': 'karmaicom', 'id':679539901}, 'chat': {'id': 679539901, 'username': 'karmaicom'}, 'text': 'Teste'}}}}}
@@ -274,25 +278,29 @@ public class RockBot extends TelegramLongPollingBot {
 			// add reuqest header
 			con.setRequestMethod("POST");
 			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("User-Agent", "PostmanRuntime/7.15.0");
+			con.setRequestProperty("Accept", "*/*");
+			con.setRequestProperty("Cache-Control", "no-cache");
+			con.setRequestProperty("Postman-Token", "7fb16511-a6c1-45bc-81d3-36bf630392bb");
+			con.setRequestProperty("Host", "bv29vu8il0.execute-api.sa-east-1.amazonaws.com");
+			con.setRequestProperty("accept-encoding", "gzip, deflate");	
+			con.setRequestProperty("Connection", "keep-alive");
+			
+			//con.setRequestProperty("Accept-Charset", "utf-8");
+			//con.setRequestProperty("Charset", "utf-8");
+			//con.setRequestProperty("Accept", "application/json");
 
-			String urlParameters = jsonInputString;
-
+			//Charset.forName("UTF-8").encode(jsonInputString);
+			
 			// Send post request
 			con.setDoOutput(true);
+			
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			wr.writeBytes(urlParameters);
+			wr.writeBytes(jsonInputString);
 			wr.flush();
 			wr.close();
 
-			/*
-			int responseCode = con.getResponseCode();
-			System.out.println("\nSending 'POST' request to URL : " + url);
-			System.out.println("Post parameters : " + urlParameters);
-			System.out.println("Response Code : " + responseCode);
-			*/
-			
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			String inputLine;
 			StringBuffer response = new StringBuffer();
 
 			JsonParser jp = new JsonParser();
@@ -300,23 +308,46 @@ public class RockBot extends TelegramLongPollingBot {
 		    JsonObject jsonobj = root.getAsJsonObject();
 		    JsonElement textoMsgResposta = jsonobj.get("fulfillmentText");
 			
+		    String inputLine;
 			while ((inputLine = in.readLine()) != null) {
 				response.append(inputLine);
 			}
 			in.close();
 
-			String textMsgRespostaFormatada = textoMsgResposta.toString().replace("\"", "");
+			textMsgRespostaFormatada = textoMsgResposta.toString().replace("\"", "");
 			
 			// print result
 			//System.out.println(response.toString());
 			enviarRespostaTelegram(textMsgRespostaFormatada.toString(), message, update, null, null);
 			
 		} catch (MalformedURLException e) {
+			//enviarRespostaTelegram("Desculpa, mas não entendi. Estou tentando novamente.", message, update, null, null);
 			e.printStackTrace();
+			if (contadorTentativas < 3) {
+				contadorTentativas++;
+				enviarRespostaAPI(message, update);
+			}else {
+				enviarRespostaTelegram("Desculpa, mas realmente não entendi. Pergunte novamente.", message, update, null, null);
+			}
 		} catch (ProtocolException e) {
+			//enviarRespostaTelegram("Desculpa, mas não entendi. Estou tentando novamente.", message, update, null, null);
 			e.printStackTrace();
+			if (contadorTentativas < 3) {
+				contadorTentativas++;
+				enviarRespostaAPI(message, update);
+			}else {
+				enviarRespostaTelegram("Desculpa, mas realmente não entendi. Pergunte novamente.", message, update, null, null);
+			}
 		} catch (IOException e) {
+			//enviarRespostaTelegram("Desculpa, mas não entendi. Estou tentando novamente.", message, update, null, null);
 			e.printStackTrace();
+			System.out.println(contadorTentativas);
+			if (contadorTentativas < 3) {
+				contadorTentativas++;
+				enviarRespostaAPI(message, update);
+			}else {
+				enviarRespostaTelegram("Desculpa, mas realmente não entendi. Pergunte novamente.", message, update, null, null);
+			}
 		}
 		
 	}
