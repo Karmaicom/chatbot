@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -326,15 +327,19 @@ public class MindBot extends TelegramLongPollingBot {
 			wr.writeBytes(jsonInputString);
 			wr.flush();
 			wr.close();
-
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			
+			System.out.println("getContent: " + con.getContent());
+			
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8));
 			StringBuffer response = new StringBuffer();
-
+			
 			JsonParser jp = new JsonParser();
-			JsonElement root = jp.parse(new InputStreamReader((InputStream) con.getContent()));
+			JsonElement root = jp.parse(new InputStreamReader((InputStream) con.getContent(), StandardCharsets.UTF_8));
 			JsonObject jsonobj = root.getAsJsonObject();
 			JsonElement textoMsgResposta = jsonobj.get("fulfillmentText");
 
+			System.out.println("Retorno: " + textoMsgResposta);
+			
 			String inputLine;
 			while ((inputLine = in.readLine()) != null) {
 				response.append(inputLine);
