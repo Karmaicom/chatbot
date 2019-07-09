@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
-import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -28,6 +27,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.vdurmont.emoji.EmojiParser;
 
 public class MindBot extends TelegramLongPollingBot {
 
@@ -41,14 +41,14 @@ public class MindBot extends TelegramLongPollingBot {
 
 	@Override
 	public String getBotUsername() {
-		// return "rockbot2019_bot";
-		return "mindbr_bot";
+		return "rockbot2019_bot";
+		// return "mindbr_bot";
 	}
 
 	@Override
 	public String getBotToken() {
-		// return "865506190:AAEFhfmOCFCn3su-ZVn2zVRbwmKs4sTCBc4";
-		return "828048268:AAEt5WU1i_s-wm1tmhSf55OAMalCCw8Yd-w";
+		return "865506190:AAEFhfmOCFCn3su-ZVn2zVRbwmKs4sTCBc4";
+		// return "828048268:AAEt5WU1i_s-wm1tmhSf55OAMalCCw8Yd-w";
 	}
 
 	/**
@@ -59,15 +59,19 @@ public class MindBot extends TelegramLongPollingBot {
 	 * @param update
 	 */
 	public void tratarTextoUsuarioTelegram(String textoUsuarioTelegram, SendMessage message, Update update) {
-		String textUsuario = textoUsuarioTelegram.toLowerCase();
 		Boolean mensagemRespondida = false;
-
-		// Command Start
+		String textUsuario = textoUsuarioTelegram.toLowerCase();
+		
+		String[] palavras = textUsuario.split(" ");
+		int quantidadeDePalavras = palavras.length;
+		
+		// Tratamento do comando /start, enviando assim que usuário inicia a conversa com a Mind pela primeira vez
 		if (textUsuario.equals("/start")) {
 			enviarRespostaTelegram("Bem vindo(a) " + update.getMessage().getFrom().getFirstName() + "!", message,
 					update, null, null);
 			mensagemRespondida = true;
 		}
+
 
 		// Intent horário
 		// SimpleDateFormat spf = new SimpleDateFormat("hh:mm:ss");
@@ -102,7 +106,8 @@ public class MindBot extends TelegramLongPollingBot {
 
 		// Intent chamar
 		List<String> chamar = Arrays.asList("perguntar", "fazer uma pergunta", "fazer pergunta", "assistente", "e aí",
-				"e ae", "eae", "fala aí", "há", " quanto tempo", "opa", "oi tudo bem", "olá", "fala", "boa noite",
+				"e ae", "eae", "fala aí", "há", " quanto tempo", "opa", "oi tudo bem", "olá", "ola", "holla", "hola", 
+				"fala", "boa noite", "hi", "hello", "pode me ajudar?", "pode me ajudar ?",
 				"bom dia", "boa tarde", "oiê", "fala ae", "oi", "pergunta", "quero fazer uma pergunta",
 				"gostaria de fazer uma pergunta", "?");
 		if (chamar.contains(textUsuario) && mensagemRespondida == false) {
@@ -212,13 +217,26 @@ public class MindBot extends TelegramLongPollingBot {
 			mensagemRespondida = true;
 		}
 
+		// Verifica a quantidade de palvaras informadas pelo usuário
+		if(quantidadeDePalavras < 3 && mensagemRespondida == false) {
+			List<String> quantidadeDePalavrasList = Arrays.asList(EmojiParser.parseToUnicode("Desculpe, mas preciso de mais informações."));
+			Random random = new Random();
+			enviarRespostaTelegram(quantidadeDePalavrasList.get(random.nextInt(quantidadeDePalavrasList.size())), message, update, null, null);
+			mensagemRespondida = true;
+		}else if (mensagemRespondida == false) {
+			enviarRespostaAPI(message, update);
+			mensagemRespondida = true;
+		}
+		
+		/*
 		if (mensagemRespondida == false) {
 			enviarRespostaAPI(message, update);
 			// enviarRespostaTelegram("Ainda não conheço sobre esse assunto. Favor pesquisar
 			// em " + "http:\\\\www.google.com.br", message, update);
 			mensagemRespondida = true;
 		}
-
+  		*/
+		
 	}
 
 	/*
@@ -280,7 +298,6 @@ public class MindBot extends TelegramLongPollingBot {
 
 		// https://zfrdmofcdk.execute-api.us-east-1.amazonaws.com/default/HelloFunction
 		// https://bv29vu8il0.execute-api.sa-east-1.amazonaws.com/DEV/chamador
-
 		// String username = "rararipe";
 
 		String textMsgRespostaFormatada = "";
@@ -360,7 +377,7 @@ public class MindBot extends TelegramLongPollingBot {
 				contadorTentativas++;
 				enviarRespostaAPI(message, update);
 			} else {
-				enviarRespostaTelegram("Desculpa, mas realmente não entendi. Pergunte novamente.", message, update,
+				enviarRespostaTelegram("Ops! Que vergonha! Tivemos um erro de infra estrutura. Por favor, pergunte novamente.", message, update,
 						null, null);
 			}
 		} catch (ProtocolException e) {
@@ -371,7 +388,7 @@ public class MindBot extends TelegramLongPollingBot {
 				contadorTentativas++;
 				enviarRespostaAPI(message, update);
 			} else {
-				enviarRespostaTelegram("Desculpa, mas realmente não entendi. Pergunte novamente.", message, update,
+				enviarRespostaTelegram("Ops! Que vergonha! Tivemos um erro de infra estrutura. Por favor, pergunte novamente.", message, update,
 						null, null);
 			}
 		} catch (IOException e) {
@@ -383,7 +400,7 @@ public class MindBot extends TelegramLongPollingBot {
 				contadorTentativas++;
 				enviarRespostaAPI(message, update);
 			} else {
-				enviarRespostaTelegram("Desculpa, mas realmente não entendi. Pergunte novamente.", message, update,
+				enviarRespostaTelegram("Ops! Que vergonha! Tivemos um erro de infra estrutura. Por favor, pergunte novamente.", message, update,
 						null, null);
 			}
 		}
