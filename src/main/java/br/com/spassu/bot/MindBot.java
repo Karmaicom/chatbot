@@ -41,14 +41,14 @@ public class MindBot extends TelegramLongPollingBot {
 
 	@Override
 	public String getBotUsername() {
-		return "rockbot2019_bot";
-		// return "mindbr_bot";
+		//return "rockbot2019_bot";
+		return "mindbr_bot";
 	}
 
 	@Override
 	public String getBotToken() {
-		return "865506190:AAEFhfmOCFCn3su-ZVn2zVRbwmKs4sTCBc4";
-		// return "828048268:AAEt5WU1i_s-wm1tmhSf55OAMalCCw8Yd-w";
+		// return "865506190:AAEFhfmOCFCn3su-ZVn2zVRbwmKs4sTCBc4";
+		return "828048268:AAEt5WU1i_s-wm1tmhSf55OAMalCCw8Yd-w";
 	}
 
 	/**
@@ -62,7 +62,9 @@ public class MindBot extends TelegramLongPollingBot {
 		Boolean mensagemRespondida = false;
 		String textUsuario = textoUsuarioTelegram.toLowerCase();
 		
+		// Cirar um array com todas as palavras da frase enviada pelo usuário
 		String[] palavras = textUsuario.split(" ");
+		// Guarda a quantidade de palavras do array palavras[]
 		int quantidadeDePalavras = palavras.length;
 		
 		// Tratamento do comando /start, enviando assim que usuário inicia a conversa com a Mind pela primeira vez
@@ -77,7 +79,6 @@ public class MindBot extends TelegramLongPollingBot {
 		// SimpleDateFormat spf = new SimpleDateFormat("hh:mm:ss");
 		// Date agora = new Date();
 		// String horas = spf.format(agora);
-
 		Calendar data = Calendar.getInstance();
 		int hora = data.get(Calendar.HOUR_OF_DAY);
 		int minuto = data.get(Calendar.MINUTE);
@@ -400,7 +401,7 @@ public class MindBot extends TelegramLongPollingBot {
 				contadorTentativas++;
 				enviarRespostaAPI(message, update);
 			} else {
-				enviarRespostaTelegram("Ops! Que vergonha! Tivemos um erro de infra estrutura. Por favor, pergunte novamente.", message, update,
+				enviarRespostaTelegram("Ops! Que vergonha! Tivemos um erro de infraestrutura. Por favor, pergunte novamente.", message, update,
 						null, null);
 			}
 		}
